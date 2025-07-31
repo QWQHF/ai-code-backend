@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: local
   application:
     name: ai-code-backend
   # mysql
@@ -23,3 +25,24 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+# langchain4j
+langchain4j:
+  open-ai:
+    chat-model:
+      base-url: https://api.deepseek.com
+      api-key: <Your API Key>
+      model-name: deepseek-chat
+      max-tokens: 8192
+      log-requests: true
+      log-responses: true
+      response-format: json-object
+      strict-json-schema: true
+    streaming-chat-model:
+      base-url: https://api.deepseek.com
+      api-key: <Your API Key>
+      model-name: deepseek-chat
+      max-tokens: 8192
+      log-requests: true
+      log-responses: true
+
+
