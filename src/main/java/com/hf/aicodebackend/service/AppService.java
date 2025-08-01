@@ -42,5 +42,20 @@ public interface AppService extends IService<App> {
      */
     List<AppVO> getAppVOList(List<App> appList);
 
+    /**
+     * 聊天生成代码
+     * @param appId     应用ID
+     * @param message   用户消息
+     * @param loginUser 登录用户
+     * @return Flux
+     */
     Flux<String> chatToGenCode(Long appId, String message, User loginUser);
+
+    /**
+     * 部署应用
+     * @param appId     应用ID
+     * @param loginUser 登录用户
+     * @return 部署结果
+     */
+    String deployApp(Long appId, User loginUser);
 }
