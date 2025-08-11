@@ -1,4 +1,9 @@
 spring:
+  # session 配置
+  session:
+    store-type: redis
+    # session 30 天过期
+    timeout: 2592000
   profiles:
     active: local
   application:
@@ -13,13 +18,22 @@ spring:
 server:
   port: 3399
   servlet:
-   context-path: /api
+    context-path: /api
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
+
+
+
+
 
 # springdoc-openapi
 springdoc:
   group-configs:
     - group: 'default'
       packages-to-scan: com.hf.aicodebackend.controller
+
 # knife4j
 knife4j:
   enable: true
