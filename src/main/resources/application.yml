@@ -6,6 +6,7 @@ spring:
       port: 6379
       password: ""
       ttl: 3600
+      database: 1
   # session 配置
   session:
     store-type: redis
@@ -30,10 +31,6 @@ server:
     session:
       cookie:
         max-age: 2592000
-
-
-
-
 
 # springdoc-openapi
 springdoc:
