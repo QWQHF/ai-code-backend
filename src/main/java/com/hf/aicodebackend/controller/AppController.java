@@ -12,6 +12,7 @@ import com.hf.aicodebackend.constant.UserConstant;
 import com.hf.aicodebackend.exception.BusinessException;
 import com.hf.aicodebackend.exception.ErrorCode;
 import com.hf.aicodebackend.exception.ThrowUtils;
+import com.hf.aicodebackend.model.dto.admin.AppAdminUpdateRequest;
 import com.hf.aicodebackend.model.dto.app.AppAddRequest;
 import com.hf.aicodebackend.model.dto.app.AppDeployRequest;
 import com.hf.aicodebackend.model.dto.app.AppQueryRequest;
@@ -32,6 +33,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
@@ -181,6 +183,11 @@ public class AppController {
      * @return 精选应用列表
      */
     @PostMapping("/good/list/page/vo")
+    @Cacheable(
+            value = "good_app_page",
+            key = "T(com.hf.aicodebackend.utils.CacheKeyUtils).generateKey(#appQueryRequest)",
+            condition = "#appQueryRequest.pageNum <= 10"
+    )
     public BaseResponse<Page<AppVO>> listGoodAppVOByPage(@RequestBody AppQueryRequest appQueryRequest) {
         ThrowUtils.throwIf(appQueryRequest == null, ErrorCode.PARAMS_ERROR);
         // 限制每页最多 20 个
@@ -219,21 +226,21 @@ public class AppController {
     /**
      * 管理员更新应用
      *
-     * @param appUpdateRequest 更新请求
+     * @param appAdminUpdateRequest 更新请求
      * @return 更新结果
      */
     @PostMapping("/admin/update")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> updateAppByAdmin(@RequestBody AppUpdateRequest appUpdateRequest) {
-        if (appUpdateRequest == null || appUpdateRequest.getId() <= 0) {
+    public BaseResponse<Boolean> updateAppByAdmin(@RequestBody AppAdminUpdateRequest appAdminUpdateRequest) {
+        if (appAdminUpdateRequest == null || appAdminUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        long id = appUpdateRequest.getId();
+        long id = appAdminUpdateRequest.getId();
         // 判断是否存在
         App oldApp = appService.getById(id);
         ThrowUtils.throwIf(oldApp == null, ErrorCode.NOT_FOUND_ERROR);
         App app = new App();
-        BeanUtil.copyProperties(appUpdateRequest, app);
+        BeanUtil.copyProperties(appAdminUpdateRequest, app);
         // 设置更新时间
         app.setUpdateTime(LocalDateTime.now());
         boolean result = appService.updateById(app);
