@@ -21,6 +21,8 @@ import com.hf.aicodebackend.model.entity.User;
 import com.hf.aicodebackend.model.enums.CodeGenTypeEnum;
 import com.hf.aicodebackend.model.enums.UserRoleEnum;
 import com.hf.aicodebackend.model.vo.AppVO;
+import com.hf.aicodebackend.ratelimiter.annotation.RateLimit;
+import com.hf.aicodebackend.ratelimiter.enums.RateLimitType;
 import com.hf.aicodebackend.service.AppService;
 import com.hf.aicodebackend.service.ProjectDownloadService;
 import com.hf.aicodebackend.service.UserService;
@@ -285,6 +287,7 @@ public class AppController {
      * @param request 请求对象
      * @return 生成结果流
      */
+    @RateLimit(limitType = RateLimitType.USER, rate = 5, rateInterval = 60, message = "AI 对话请求过于频繁，请稍后再试")
     @GetMapping(value = "/chat/gen/code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> chatToGenCode(@RequestParam Long appId,
                                                        @RequestParam String message,
